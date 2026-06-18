@@ -176,6 +176,9 @@
     .m-badge{background:var(--plt);border-radius:50px;padding:.22rem .7rem;font-family:'Martian Mono',monospace;font-size:.58rem;color:var(--p)}
     .m-review-btn{font-family:'Martian Mono',monospace;font-size:.56rem;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;border:none;background:none;padding:0;transition:color .2s}
     .m-review-btn:hover{color:var(--p)}
+    .m-del-btn{font-size:.8rem;cursor:pointer;background:none;border:none;padding:.15rem;opacity:0;transition:opacity .2s;line-height:1;border-radius:50%}
+    .month-card:hover .m-del-btn{opacity:.5}
+    .m-del-btn:hover{opacity:1!important;background:#fce7f3}
 
     .goals-list{display:flex;flex-direction:column;gap:.5rem}
 
@@ -862,6 +865,7 @@ function renderGoals(){
         <div style="display:flex;align-items:center;gap:.65rem">
           <button class="m-review-btn" onclick="openReview(${m.id})">📝 Review</button>
           <div class="m-badge">${dc}/${m.goals.length}</div>
+          <button class="m-del-btn" onclick="deleteMonth(${m.id})" title="Delete month">🗑</button>
         </div>
       </div>
       <div class="goals-list">${m.goals.map(g=>`
@@ -992,6 +996,16 @@ function toggle(mid,gid){
     setTimeout(()=>confetti(true),100);
     if(!fresh.review)setTimeout(()=>openReview(mid),900);
   }
+}
+
+function deleteMonth(mid){
+  mid=Number(mid);
+  const data=load();
+  const m=data.find(m=>m.id===mid);
+  if(!m)return;
+  if(!confirm(`Delete ${m.month} ${m.year} and all its goals? This can't be undone.`))return;
+  save(data.filter(m=>m.id!==mid));
+  renderAll();
 }
 
 function delGoal(mid,gid){mid=Number(mid);gid=Number(gid);const data=load(),m=data.find(m=>m.id===mid);if(m)m.goals=m.goals.filter(g=>g.id!==gid);save(data);renderAll()}
